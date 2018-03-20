@@ -25,8 +25,7 @@ def identity_block(kernel_size, filters, stage, block, weight_decay=0., batch_mo
         x = BatchNormalization(axis=bn_axis, name=bn_name_base + '2a', momentum=batch_momentum)(x)
         x = Activation('relu')(x)
 
-        x = Conv2D(nb_filter2, (kernel_size, kernel_size),
-                          padding='same', name=conv_name_base + '2b', kernel_regularizer=l2(weight_decay))(x)
+        x = Conv2D(nb_filter2, (kernel_size, kernel_size), padding='same', name=conv_name_base + '2b', kernel_regularizer=l2(weight_decay))(x)
         x = BatchNormalization(axis=bn_axis, name=bn_name_base + '2b', momentum=batch_momentum)(x)
         x = Activation('relu')(x)
 
@@ -36,6 +35,7 @@ def identity_block(kernel_size, filters, stage, block, weight_decay=0., batch_mo
         x = Add()([x, input_tensor])
         x = Activation('relu')(x)
         return x
+        
     return f
 
 def conv_block(kernel_size, filters, stage, block, weight_decay=0., strides=(2, 2), batch_momentum=0.99):
@@ -57,8 +57,7 @@ def conv_block(kernel_size, filters, stage, block, weight_decay=0., strides=(2, 
         conv_name_base = 'res' + str(stage) + block + '_branch'
         bn_name_base = 'bn' + str(stage) + block + '_branch'
 
-        x = Conv2D(nb_filter1, (1, 1), strides=strides,
-                          name=conv_name_base + '2a', kernel_regularizer=l2(weight_decay))(input_tensor)
+        x = Conv2D(nb_filter1, (1, 1), strides=strides, name=conv_name_base + '2a', kernel_regularizer=l2(weight_decay))(input_tensor)
         x = BatchNormalization(axis=bn_axis, name=bn_name_base + '2a', momentum=batch_momentum)(x)
         x = Activation('relu')(x)
 
@@ -70,8 +69,7 @@ def conv_block(kernel_size, filters, stage, block, weight_decay=0., strides=(2, 
         x = Conv2D(nb_filter3, (1, 1), name=conv_name_base + '2c', kernel_regularizer=l2(weight_decay))(x)
         x = BatchNormalization(axis=bn_axis, name=bn_name_base + '2c', momentum=batch_momentum)(x)
 
-        shortcut = Conv2D(nb_filter3, (1, 1), strides=strides,
-                                 name=conv_name_base + '1', kernel_regularizer=l2(weight_decay))(input_tensor)
+        shortcut = Conv2D(nb_filter3, (1, 1), strides=strides, name=conv_name_base + '1', kernel_regularizer=l2(weight_decay))(input_tensor)
         shortcut = BatchNormalization(axis=bn_axis, name=bn_name_base + '1', momentum=batch_momentum)(shortcut)
 
         x = Add()([x, shortcut])

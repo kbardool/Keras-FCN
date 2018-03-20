@@ -42,7 +42,7 @@ def train(batch_size, epochs, lr_base, lr_power, weight_decay, classes,
     if os.path.exists(save_path) is False:
         os.mkdir(save_path)
 
-    # ###############learning rate scheduler####################
+    ################learning rate scheduler####################
     def lr_scheduler(epoch, mode='power_decay'):
         '''if lr_dict.has_key(epoch):
             lr = lr_dict[epoch]
@@ -71,9 +71,10 @@ def train(batch_size, epochs, lr_base, lr_power, weight_decay, classes,
 
         print('lr: %f' % lr)
         return lr
+
     scheduler = LearningRateScheduler(lr_scheduler)
 
-    # ###################### make model ########################
+    ####################### make model ########################
     checkpoint_path = os.path.join(save_path, 'checkpoint_weights.hdf5')
 
     model = globals()[model_name](weight_decay=weight_decay,
@@ -81,7 +82,7 @@ def train(batch_size, epochs, lr_base, lr_power, weight_decay, classes,
                                   batch_momentum=batchnorm_momentum,
                                   classes=classes)
 
-    # ###################### optimizer ########################
+    ####################### optimizer ########################
     optimizer = SGD(lr=lr_base, momentum=0.9)
     # optimizer = Nadam(lr=lr_base, beta_1 = 0.825, beta_2 = 0.99685)
 
@@ -136,7 +137,7 @@ def train(batch_size, epochs, lr_base, lr_power, weight_decay, classes,
     # from Keras documentation: Total number of steps (batches of samples) to yield from generator before declaring one epoch finished
     # and starting the next epoch. It should typically be equal to the number of unique samples of your dataset divided by the batch size.
     steps_per_epoch = int(np.ceil(get_file_len(train_file_path) / float(batch_size)))
-
+'''
     history = model.fit_generator(
         generator=train_datagen.flow_from_directory(
             file_path=train_file_path,
@@ -164,23 +165,25 @@ def train(batch_size, epochs, lr_base, lr_power, weight_decay, classes,
        )
 
     model.save_weights(save_path+'/model.hdf5')
+'''
 
 if __name__ == '__main__':
     model_name = 'AtrousFCN_Resnet50_16s'
     #model_name = 'Atrous_DenseNet'
     #model_name = 'DenseNet_FCN'
-    batch_size = 16
+    batch_size  = 16
     batchnorm_momentum = 0.95
-    epochs = 250
-    lr_base = 0.01 * (float(batch_size) / 16)
-    lr_power = 0.9
+    epochs      = 250
+    lr_base     = 0.01 * (float(batch_size) / 16)
+    lr_power    = 0.9
     resume_training = False
     if model_name is 'AtrousFCN_Resnet50_16s':
         weight_decay = 0.0001/2
     else:
         weight_decay = 1e-4
     target_size = (320, 320)
-    dataset = 'VOC2012_BERKELEY'
+    dataset     = 'VOC2012_BERKELEY'
+
     if dataset == 'VOC2012_BERKELEY':
         # pascal voc + berkeley semantic contours annotations
         train_file_path = os.path.expanduser('~/.keras/datasets/VOC2012/combined_imageset_train.txt') #Data/VOClarge/VOC2012/ImageSets/Segmentation
@@ -191,6 +194,7 @@ if __name__ == '__main__':
         data_suffix='.jpg'
         label_suffix='.png'
         classes = 21
+
     if dataset == 'COCO':
         # ###################### loss function & metric ########################
         train_file_path = os.path.expanduser('~/.keras/datasets/VOC2012/VOCdevkit/VOC2012/ImageSets/Segmentation/train.txt') #Data/VOClarge/VOC2012/ImageSets/Segmentation

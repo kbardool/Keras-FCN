@@ -12,6 +12,8 @@ from keras.applications.vgg16 import *
 from keras.applications.resnet50 import *
 import keras.backend as K
 import tensorflow as tf
+import pprint
+
 
 from get_weights_path import *
 from resnet_helpers import *
@@ -55,26 +57,40 @@ def transfer_FCN_Vgg16():
 
     # Create model
     model = Model(img_input, x)
-    weights_path = os.path.expanduser(os.path.join('~', '.keras/models/fcn_vgg16_weights_tf_dim_ordering_tf_kernels.h5'))
-
+    # weights_path = os.path.expanduser(os.path.join('~', '.keras/models/fcn_vgg16_weights_tf_dim_ordering_tf_kernels.h5'))
+    weights_path = 'E:/Models/fcn_vgg16_weights_tf_dim_ordering_tf_kernels.h5'
+    pp = pprint.PrettyPrinter(indent=4)
     #transfer if weights have not been created
     if os.path.isfile(weights_path) == False:
         flattened_layers = model.layers
         index = {}
+        
         for layer in flattened_layers:
             if layer.name:
                 index[layer.name]=layer
         vgg16 = VGG16()
+        print(' index is : ') 
+        pp.pprint(index)
+        
         for layer in vgg16.layers:
+            print('==> layer name: ' , layer.name)
             weights = layer.get_weights()
+
             if layer.name=='fc1':
+                print('   Layer fc1 : Weights shape is : ', weights[0].shape )
                 weights[0] = np.reshape(weights[0], (7,7,512,4096))
+                print('                : reshaped to : ', weights[0].shape )
             elif layer.name=='fc2':
+                print('   Layer fc2 : Weights shape is : ', weights[0].shape )
                 weights[0] = np.reshape(weights[0], (1,1,4096,4096))
+                print('                  reshaped to : ', weights[0].shape )
             elif layer.name=='predictions':
                 layer.name='predictions_1000'
+                print('   Layer predictions_1000 : Weights shape is ', weights[0].shape )
                 weights[0] = np.reshape(weights[0], (1,1,4096,1000))
-            if index.has_key(layer.name):
+                print('                  reshaped to : ', weights[0].shape )
+            if layer.name in index:
+                print(' Set layer {} weights ..'.format(layer.name))
                 index[layer.name].set_weights(weights)
         model.save_weights(weights_path)
         print( 'Successfully transformed!')
@@ -117,7 +133,8 @@ def transfer_FCN_ResNet50():
 
     # Create model
     model = Model(img_input, x)
-    weights_path = os.path.expanduser(os.path.join('~', '.keras/models/fcn_resnet50_weights_tf_dim_ordering_tf_kernels.h5'))
+    # weights_path = os.path.expanduser(os.path.join('~', '.keras/models/fcn_resnet50_weights_tf_dim_ordering_tf_kernels.h5'))
+    weights_path = 'E:/Models/fcn_resnet50_weights_tf_dim_ordering_tf_kernels.h5'
 
     #transfer if weights have not been created
     if os.path.isfile(weights_path) == False:
