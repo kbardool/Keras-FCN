@@ -3,3 +3,7 @@
 */logs/*
 *.pyc
 *.pkl
+.ipynb_checkpoints/
+.idea/
+.vscode/
+Thumbs.db
